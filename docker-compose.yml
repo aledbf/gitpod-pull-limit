@@ -1,0 +1,31 @@
+version: '3'
+
+volumes:
+    grafana_data:
+
+services:
+
+  # Flink Job Manager
+  flink-jobmanager:
+    image: flink:1.11.2-scala_2.12-java11
+    container_name: flink-jobmanager
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+
+  # Flink Task Manager
+  flink-taskmanager:
+    image: flink:1.11.2-scala_2.12-java11
+    container_name: flink-taskmanager
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 10
